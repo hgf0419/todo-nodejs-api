@@ -1,6 +1,6 @@
 /**
- * 描述: 业务逻辑处理 - 任务相关接口
- * 日期: 2020-06-20
+ * 描述: 业务逻辑处理 - 新闻相关接口
+ * 日期: 2021-06-28
 */
 
 const { querySql, queryOne } = require('../utils/index');
@@ -32,7 +32,7 @@ function queryTaskList(req, res, next) {
     pageNo = pageNo ? pageNo : 1;
     status = (status || status == 0) ? status : null;
 
-    let query = `select d.id, d.title, d.content, d.status, d.is_major, d.gmt_create, d.gmt_expire from t_task d`;
+    let query = `select d.id, d.title, d.content, d.status, d.is_major, d.gmt_create, d.gmt_expire from sys_task d`;
     querySql(query)
     .then(data => {
     	// console.log('任务列表查询===', data);
@@ -50,7 +50,7 @@ function queryTaskList(req, res, next) {
         let n = (pageNo - 1) * pageSize;
         // 拼接分页的sql语句命令
         if (status) {
-          let query_1 = `select d.id, d.title, d.content, d.status, d.is_major, d.gmt_create, d.gmt_expire from t_task d where status='${status}' order by d.gmt_create desc`;
+          let query_1 = `select d.id, d.title, d.content, d.status, d.is_major, d.gmt_create, d.gmt_expire from sys_task d where status='${status}' order by d.gmt_create desc`;
           querySql(query_1)
           .then(result_1 => {
             console.log('分页1===', result_1);
@@ -133,7 +133,7 @@ function addTask(req, res, next) {
           data: null 
         })
       } else {
-        const query = `insert into t_task(title, content, status, is_major, gmt_expire) values('${title}', '${content}', 0, 0, '${gmt_expire}')`;
+        const query = `insert into sys_task(title, content, status, is_major, gmt_expire) values('${title}', '${content}', 0, 0, '${gmt_expire}')`;
         querySql(query)
         .then(data => {
           // console.log('添加任务===', data);
@@ -177,7 +177,7 @@ function editTask(req, res, next) {
               data: null 
             })
           } else {
-            const query = `update t_task set title='${title}', content='${content}', gmt_expire='${gmt_expire}' where id='${id}'`;
+            const query = `update sys_task set title='${title}', content='${content}', gmt_expire='${gmt_expire}' where id='${id}'`;
             querySql(query)
             .then(data => {
               // console.log('编辑任务===', data);
@@ -220,7 +220,7 @@ function updateTaskStatus(req, res, next) {
     findTask(id, 2)
     .then(task => {
       if (task) {
-        const query = `update t_task set status='${status}' where id='${id}'`;
+        const query = `update sys_task set status='${status}' where id='${id}'`;
         querySql(query)
         .then(data => {
           // console.log('操作任务状态===', data);
@@ -261,7 +261,7 @@ function updateMark(req, res, next) {
     findTask(id, 2)
     .then(task => {
       if (task) {
-        const query = `update t_task set is_major='${is_major}' where id='${id}'`;
+        const query = `update sys_task set is_major='${is_major}' where id='${id}'`;
         querySql(query)
         .then(data => {
           // console.log('点亮红星标记===', data);
@@ -302,8 +302,8 @@ function deleteTask(req, res, next) {
     findTask(id, 2)
     .then(task => {
       if (task) {
-        const query = `update t_task set status='${status}' where id='${id}'`;
-        // const query = `delete from t_task where id='${id}'`;
+        const query = `update sys_task set status='${status}' where id='${id}'`;
+        // const query = `delete from sys_task where id='${id}'`;
         querySql(query)
         .then(data => {
           // console.log('删除任务===', data);
@@ -337,9 +337,9 @@ function deleteTask(req, res, next) {
 function findTask(param, type) {
   let query = null;
   if (type == 1) { // 1:添加类型 2:编辑或删除类型
-    query = `select id, title from t_task where title='${param}'`;
+    query = `select id, title from sys_task where title='${param}'`;
   } else {
-    query = `select id, title from t_task where id='${param}'`;
+    query = `select id, title from sys_task where id='${param}'`;
   }
   return queryOne(query);
 }
